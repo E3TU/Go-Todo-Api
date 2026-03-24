@@ -1,23 +1,15 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
-	"sync/atomic"
 
 	"todo-api/models"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"github.com/rs/xid"
 )
 
 var todos = []models.Todo{}
-var nextID int64
-
-func nextTodoID() string {
-	n := atomic.AddInt64(&nextID, 1)
-	return fmt.Sprintf("%d", n)
-}
 
 func GetTodos(c *gin.Context) {
 	c.JSON(http.StatusOK, todos)
@@ -30,7 +22,9 @@ func CreateTodo(c *gin.Context) {
 		return
 	}
 
-	input.ID = uuid.NewString()
+	var guid = xid.New()
+
+	input.ID = guid.String()
 	todos = append(todos, input)
 
 	c.JSON(http.StatusCreated, input)
